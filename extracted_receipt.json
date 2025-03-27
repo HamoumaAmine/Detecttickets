@@ -1,0 +1,89 @@
+[
+    {
+        "id": 297713153,
+        "store_name": "ODESSA LB",
+        "store_email": null,
+        "store_address": "28 RUE D ODESSA 75014 PARIS 14",
+        "total_amount": 88.8,
+        "subtotal": 88.8,
+        "tax_amount": null,
+        "tax_rate": "N/A",
+        "currency": "EUR",
+        "payment_type": null,
+        "ticket_number": "6846",
+        "date_time": "2020-06-07 22:42:54",
+        "document_type": "receipt",
+        "document_title": null,
+        "category": "Meals & Entertainment",
+        "country_code": "FR",
+        "duplicate_of": 297520224,
+        "items": [
+            {
+                "description": "COUVERT STEVEN",
+                "full_description": "COUVERT STEVEN",
+                "quantity": 2.0,
+                "price": null,
+                "total": null
+            },
+            {
+                "description": "APEROL SPRITZ",
+                "full_description": "APEROL SPRITZ",
+                "quantity": 1.0,
+                "price": null,
+                "total": 11.5
+            },
+            {
+                "description": "BADOIT ROUGE",
+                "full_description": "BADOIT ROUGE",
+                "quantity": 2.0,
+                "price": 5.8,
+                "total": 11.6
+            },
+            {
+                "description": "SUPP COVID RESTO",
+                "full_description": "SUPP COVID RESTO",
+                "quantity": 1.0,
+                "price": null,
+                "total": 1.5
+            },
+            {
+                "description": "ENTRECOTE GRILLEE",
+                "full_description": "ENTRECOTE GRILLEE",
+                "quantity": 1.0,
+                "price": null,
+                "total": 24.5
+            },
+            {
+                "description": "CROQUE JEUNE FEMME",
+                "full_description": "CROQUE JEUNE FEMME",
+                "quantity": 1.0,
+                "price": null,
+                "total": 13.9
+            },
+            {
+                "description": "ASS. FRITES",
+                "full_description": "ASS. FRITES",
+                "quantity": 1.0,
+                "price": null,
+                "total": 6.5
+            },
+            {
+                "description": "SALADE DE FRUITS",
+                "full_description": "SALADE DE FRUITS",
+                "quantity": 1.0,
+                "price": null,
+                "total": 7.5
+            },
+            {
+                "description": "CHOCOLAT LIEGEOIS",
+                "full_description": "CHOCOLAT LIEGEOIS",
+                "quantity": 1.0,
+                "price": null,
+                "total": 11.8
+            }
+        ],
+        "image_url": "https://scdn.veryfi.com/receipts/47561bec1ae3d367/a7258d11-2631-474e-ab81-39b27b3b44d2/3558afe7-ce69-4968-b3cd-b5739668064e.jpg?Expires=1743087399&Signature=MW5B6zLgz2p15lQJPej1gI0URBOiLORH-gJJa-3RNr5ugUGoWV2Gk1nGyWjkBFcZxcQlADZq95I0tmKXSZOuyBypwPWQElZBz6Qh7uyRJFq3kQ~YVN0pvRgxxcP4TvodfF6CgD~AoQA9g61YDF6MadfMMot6CKnLKrPltRBQYVErAUqHSMMsMknMBdvIzFqiGA0hP5WxL7KxcT0px4T0QEKC8tGufd2mKyut64v7C1daRbeA1WdZ6sSjJh5eUxttJAzFyCzBUdCT5BldnF1~O0R3M7KMUBrWVDqHlphg3BgyB9WfmwuPyuJg47Q9fo9CUnJpM-Klw8FSRa5m5treOQ__&Key-Pair-Id=APKAJCILBXEJFZF4DCHQ",
+        "thumbnail_url": "https://scdn.veryfi.com/receipts/47561bec1ae3d367/a7258d11-2631-474e-ab81-39b27b3b44d2/thumbnail.jpg?Expires=1743087399&Signature=M1kJeCpExXAELVCtMV5-6QP58umJ7bY0LFDt4pFHGoUXXBgibTIq9BVgHZBIcUVyM3TCNOziBDucxh3f4RPxm4OVoivqV8RZSS5ynjm0nvSInWff2Avxe14eGtO5B3eGUjcyT1Bg2heTj02hWgysjBYBjar3ob3FpQ6do6jGwhsuGJqHvZU75mgRCXKsLHD6wKtKjUSCFq-SRwWkHgJAu0TIaVup2avKveIby0CHzYPF8kTnq7cJp7YMBKUUiuAxSqs9s5bU0HidIs6Y~S~-n7j3ktWfASzXqZrak5IeniLEphzC3jRap~Zq01frnoQWgKnCZEZ9gSVK8OoQz8gw8A__&Key-Pair-Id=APKAJCILBXEJFZF4DCHQ",
+        "pdf_url": "https://scdn.veryfi.com/receipts/47561bec1ae3d367/a7258d11-2631-474e-ab81-39b27b3b44d2/a61cb0b4-0472-4364-a0d6-07dd68b11493.pdf?Expires=1743087399&Signature=N47MgOTVtLB9zjuQA9ANOkBDEpCoN7f1NJe~1f4tDR2dtgm6c~8bMP996EeRQ5QRpv2vnTeYXuoQeojj~gxyRsUx1NSnqxr3fCLkOoNcZ2itfT7ZjO5EolUZr7W6cpI9X0G9IkD3LPzPp49B2sqMJScF54m37c3ZYso-Mxr6~jJHgdUr7FtRFWjtYUjX19KG5vLkicNVBDqyIh5ATUD2vAhzg6DrCPxlvnDpw2KvgthTxQXNuMnGJ3qJ~VAkhdQbNj7cCfpwkx--k3YlMdsxwUmQIN5B2AEQftpmFQrxvoEdj2jtt30h0jupvhrKTyIoBpQGL~IEV~tc1CW-8HwsdA__&Key-Pair-Id=APKAJCILBXEJFZF4DCHQ"
+    }
+]

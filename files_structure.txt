@@ -1,0 +1,57 @@
+📦 Hackathon4/
+│
+├── 📂 backend/              # Dossier principal du backend
+│   ├── 📂 models/           # Dossier pour les modèles SQLAlchemy
+│   │   ├── __init__.py      # Init du package models
+│   │   ├── utilisateur.py   # Modèle pour les utilisateurs
+│   │   ├── ticket.py        # Modèle pour les tickets de caisse
+│   │
+│   ├── 📂 routes/           # Dossier pour les routes API
+│   │   ├── __init__.py      # Init du package routes
+│   │   ├── auth.py          # Routes pour l'authentification (inscription, login)
+│   │   ├── tickets.py       # Routes pour gérer les tickets
+│   │
+│   ├── 📂 services/         # Dossier pour la logique métier
+│   │   ├── __init__.py      # Init du package services
+│   │   ├── auth_service.py  # Service pour l'authentification
+│   │   ├── ticket_service.py# Service pour la gestion des tickets
+│   │
+│   ├── 📂 database/         # Dossier pour la gestion de la base de données
+│   │   ├── __init__.py      # Init du package database
+│   │   ├── database.py      # Connexion à MySQL avec SQLAlchemy
+│   │   ├── init_db.py       # Script pour créer les tables
+│   │
+│   ├── main.py              # Point d'entrée du backend FastAPI
+│   ├── config.py            # Fichier de configuration (variables d'env)
+│   ├── requirements.txt     # Liste des dépendances Python
+│
+├── 📂 frontend/             # (Facultatif) Dossier pour l'application mobile (React Native)
+│   ├── 📂 assets/           # Images, icônes, etc.
+│   ├── 📂 components/       # Composants réutilisables
+│   ├── 📂 screens/          # Écrans de l'application
+│   ├── App.js               # Fichier principal de l'application React Native
+│   ├── package.json         # Configuration des dépendances
+│
+└── README.md                # Documentation du projet
+
+
+
+
+
+🔹 Explication des fichiers
+1️⃣ Backend
+main.py → Lance l'API FastAPI, enregistre les routes.
+config.py → Stocke les variables de configuration (ex. clé JWT).
+requirements.txt → Liste des dépendances Python (FastAPI, SQLAlchemy, etc.).
+📂 models/ → Définit les modèles SQLAlchemy :
+utilisateur.py → Décrit la table des utilisateurs.
+ticket.py → Décrit la table des tickets.
+📂 routes/ → Contient les routes API :
+auth.py → Gère l'inscription et la connexion.
+tickets.py → Gère l'ajout et la récupération des tickets.
+📂 services/ → Contient la logique métier :
+auth_service.py → Vérifie les mots de passe et génère des tokens JWT.
+ticket_service.py → Traite les tickets de caisse.
+📂 database/ → Gère la base de données :
+database.py → Configure la connexion SQLAlchemy avec MySQL.
+init_db.py → Crée les tables dans MySQL.
