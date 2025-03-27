@@ -6,7 +6,6 @@ import re
 import time
 from tqdm import tqdm
 
-# API endpoint for uploading the receipt
 url_upload = "https://api.veryfi.com/api/v8/partner/documents/"
 api_key = "oue93klhrJfR41W4vHGCtMP7g2v3WYQj"  # Clé API Mistral
 
@@ -67,9 +66,7 @@ def categorize_items(items: list, api_key: str) -> list:
 
 def process_image(image_file_path):
     with open(image_file_path, 'rb') as f:
-        files = {
-            'file': (image_file_path, f, 'image/jpeg'),
-        }
+        files = {'file': (image_file_path, f, 'image/jpeg')}
         headers = {
             'Accept': 'application/json',
             'CLIENT-ID': 'vrfwRCY99sGmNEdoxtUoXIm1h5AkGFNf7UI83YS',
@@ -77,14 +74,7 @@ def process_image(image_file_path):
         }
 
         response = requests.post(url_upload, headers=headers, files=files)
-        print("Upload Response Status Code:", response.status_code)
-        print("Upload Response Body:", response.text)
-
-        try:
-            document = response.json()
-        except Exception as e:
-            raise ValueError(f"❌ Échec du parsing JSON de Veryfi : {str(e)}")
-
+        document = response.json()
         if "id" not in document:
             raise ValueError(f"✅ Upload réussi, mais pas d'ID retourné : {document}")
 
@@ -102,17 +92,28 @@ def process_image(image_file_path):
         except (IndexError, KeyError, TypeError):
             tax_rate = 'N/A'
 
-        items = [
-            {
-                'description': item.get('description', 'N/A'),
-                'full_description': item.get('full_description', 'N/A'),
-                'quantity': item.get('quantity', 'N/A'),
-                'price': item.get('price', 'N/A'),
-                'total': item.get('total', 'N/A')
-            } for item in receipt_data.get('line_items', []) if isinstance(item, dict)
-        ]
+        # Construction améliorée des items avec fusion si besoin
+        merged_items = []
+        current_item = None
+        for item in receipt_data.get('line_items', []):
+            if current_item and not item.get("description"):
+                current_item["quantity"] += item.get("quantity", 1)
+                current_item["price"] = item.get("price", current_item["price"])
+                current_item["total"] = item.get("total", current_item["total"])
+            else:
+                if current_item:
+                    merged_items.append(current_item)
+                current_item = {
+                    'description': item.get('description', 'N/A'),
+                    'full_description': item.get('full_description', 'N/A'),
+                    'quantity': item.get('quantity', 1),
+                    'price': item.get('price', 'N/A'),
+                    'total': item.get('total', 'N/A')
+                }
+        if current_item:
+            merged_items.append(current_item)
 
-        categorized_items = categorize_items(items, api_key)
+        categorized_items = categorize_items(merged_items, api_key)
 
         relevant_data = {
             'id': receipt_data.get('id', 'N/A'),
