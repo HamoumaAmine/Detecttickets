@@ -22,7 +22,7 @@ app.include_router(home.router, prefix="/home", tags=["Home"])
 app.include_router(mesoffres.router)
 app.include_router(categorie.router, prefix="/categories", tags=["Catégories"])
 app.include_router(ticket.router, prefix="/tickets", tags=["Tickets"])
-app.include_router(scan.router, prefix="/scan", tags=["Scan"])
+app.include_router(scan.router)
 
 
 @app.get("/")

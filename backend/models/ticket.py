@@ -12,6 +12,7 @@ class Ticket(Base):
     numero_ticket = Column(String(100), nullable=False)
     date_achat = Column(TIMESTAMP, default=datetime.utcnow)
     montant_total = Column(DECIMAL(10,2), nullable=False)
+    moyen_paiement = Column(String, nullable=True)  # ✅ Nouveau champ
 
     utilisateur = relationship("Utilisateur", back_populates="tickets")
     commercant = relationship("Commercant", back_populates="tickets")

@@ -9,6 +9,7 @@ import {
   Platform,
   Image,
   ScrollView,
+  Switch,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -22,29 +23,35 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
 
   const handleRegister = async () => {
     if (!nom || !email || !password) {
       alert("Tous les champs sont obligatoires.");
       return;
     }
-  
+
     if (password !== confirmPassword) {
       alert("Les mots de passe ne correspondent pas.");
       return;
     }
-  
+
+    if (!isChecked) {
+      alert("Vous devez accepter les conditions générales.");
+      return;
+    }
+
     try {
       const formData = new FormData();
       formData.append("nom", nom);
       formData.append("email", email);
       formData.append("password", password);
-  
+
       const response = await fetch('http://127.0.0.1:8000/auth/register', {
         method: 'POST',
         body: formData, // ✅ PAS DE headers ici
       });
-  
+
       const data = await response.json();
       if (response.ok) {
         alert('Compte créé !');
@@ -57,7 +64,6 @@ export default function Register() {
       console.error(error);
     }
   };
-  
 
   return (
     <KeyboardAvoidingView
@@ -136,14 +142,27 @@ export default function Register() {
             </TouchableOpacity>
           </View>
 
+          {/* Utilisation du Switch à la place du CheckBox */}
+          <View style={styles.switchContainer}>
+            <Text style={styles.termsText}>
+              En créant un compte, vous acceptez les{' '}
+              <Text
+                style={styles.link}
+                onPress={() => router.push('/ConditionsGenerales')}  // Naviguer vers la page des conditions générales
+              >
+                conditions générales d'utilisation
+              </Text>.
+            </Text>
+            <Switch
+              value={isChecked}
+              onValueChange={setIsChecked}
+              style={styles.switch}
+            />
+          </View>
+
           <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
             <Text style={styles.registerButtonText}>Créer le compte</Text>
           </TouchableOpacity>
-
-          <Text style={styles.termsText}>
-            En créant un compte ou en vous connectant, vous acceptez les conditions générales
-            d'utilisation.
-          </Text>
 
           <View style={styles.loginRedirect}>
             <Text style={styles.loginText}>Vous avez un compte ?</Text>
@@ -241,6 +260,18 @@ const styles = StyleSheet.create({
     color: '#555',
     textAlign: 'center',
     paddingHorizontal: 8,
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  switch: {
+    marginLeft: 10,
+  },
+  link: {
+    color: '#4B002A',
+    textDecorationLine: 'underline',
   },
   loginRedirect: {
     flexDirection: 'row',

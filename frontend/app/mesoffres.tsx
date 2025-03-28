@@ -10,6 +10,7 @@ import {
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
+import BottomNav from './nav_bar'; // Importer BottomNav
 
 const filters = ['Alimentation', 'Shopping', 'Coupons', 'Voyages'];
 
@@ -146,6 +147,9 @@ export default function MesOffres() {
           )}
         </View>
       ))}
+
+      {/* Ajouter la BottomNav */}
+      <BottomNav />  {/* Ajoutez la BottomNav en bas de la page */}
     </ScrollView>
   );
 }

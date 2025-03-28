@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, useWindowD
 import { Feather, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { PieChart } from 'react-native-svg-charts';
 import * as Svg from 'react-native-svg';
+import BottomNav from './nav_bar'; // Import de BottomNav
 
 type BudgetItem = {
   key: number;
@@ -63,7 +64,7 @@ export function ProfileScreen() {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 100 }}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.settings}>
@@ -115,10 +116,7 @@ export function ProfileScreen() {
                 </View>
                 <View style={styles.progressBarBackground}>
                   <View
-                    style={[
-                      styles.progressBarFill,
-                      { width: `${progress * 100}%`, backgroundColor: '#3B448F' },
-                    ]}
+                    style={[styles.progressBarFill, { width: `${progress * 100}%`, backgroundColor: '#3B448F' }]}
                   />
                 </View>
               </View>
@@ -145,12 +143,7 @@ export function ProfileScreen() {
             <TouchableOpacity>
               <Text style={styles.link}>Mes historiques →</Text>
             </TouchableOpacity>
-            {[
-              { label: 'Loisirs', color: '#770038' },
-              { label: 'Alimentation', color: '#3B448F' },
-              { label: 'Shopping', color: '#7F8BD0' },
-              { label: 'Restaurants', color: '#2D0E0E' },
-            ].map((item, index) => (
+            {[{ label: 'Loisirs', color: '#770038' }, { label: 'Alimentation', color: '#3B448F' }, { label: 'Shopping', color: '#7F8BD0' }, { label: 'Restaurants', color: '#2D0E0E' }].map((item, index) => (
               <View key={index} style={styles.legendItem}>
                 <View style={[styles.dot, { backgroundColor: item.color }]} />
                 <Text style={styles.legendText}>{item.label}</Text>
@@ -207,6 +200,9 @@ export function ProfileScreen() {
           resizeMode="contain"
         />
       </View>
+
+      {/* Ajouter la BottomNav */}
+      <BottomNav />  {/* Ajoutez BottomNav ici */}
     </ScrollView>
   );
 }

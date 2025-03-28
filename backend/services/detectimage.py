@@ -69,8 +69,8 @@ def process_image(image_file_path):
         files = {'file': (image_file_path, f, 'image/jpeg')}
         headers = {
             'Accept': 'application/json',
-            'CLIENT-ID': 'vrfwRCY99sGmNEdoxtUoXIm1h5AkGFNf7UI83YS',
-            'AUTHORIZATION': 'apikey lemdanikoceila:f685ed7bbfe52214528b4449da7357a2'
+            'CLIENT-ID': 'vrflNowDc90Cj8BexNj89VG72HW6tgYydxCuesB',
+            'AUTHORIZATION': 'apikey hamouma.amine:4b442b4debe4103aeebd60db67b388c5'
         }
 
         response = requests.post(url_upload, headers=headers, files=files)

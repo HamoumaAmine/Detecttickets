@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import BottomNav from './nav_bar'; // Importer BottomNav
 
 export default function Parametres() {
   return (
@@ -16,11 +17,10 @@ export default function Parametres() {
       <View style={styles.container}>
         {/* Profil */}
         <View style={styles.profileContainer}>
-            <Image
-    source={require('../assets/images/profile.png')}
-    style={styles.avatar}
-    />
-
+          <Image
+            source={require('../assets/images/profile.png')}
+            style={styles.avatar}
+          />
           <Text style={styles.username}>@CapucineQueen</Text>
         </View>
 
@@ -46,6 +46,9 @@ export default function Parametres() {
           </TouchableOpacity>
         </View>
       </View>
+
+      {/* Ajout de la BottomNav en bas de la page */}
+      <BottomNav />
     </View>
   );
 }
@@ -86,10 +89,7 @@ const styles = StyleSheet.create({
     width: 110,
     height: 110,
     borderRadius: 55, // cercle parfait
-    // borderWidth: 3, ← à supprimer
-    // borderColor: '#fff', ← à supprimer
   },
-  
   username: {
     marginTop: 10,
     fontSize: 18,

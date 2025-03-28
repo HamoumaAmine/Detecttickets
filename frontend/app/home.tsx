@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -9,13 +10,13 @@ import {
   Alert,
   Platform,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import ScanIcon from '../assets/icons/scan.svg';
 import { useRouter } from 'expo-router';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
+import BottomNav from './nav_bar'; // Import du BottomNav
 
 export default function Home() {
   const logoMap: { [key: string]: any } = {
@@ -70,9 +71,7 @@ export default function Home() {
   const uploadToBackend = async (formData: FormData) => {
     const token = await AsyncStorage.getItem('token');
     try {
-      const response = await fetch('http://localhost:8000/scan/scan/', {
-
-
+      const response = await fetch('http://localhost:8000/scan/', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -82,7 +81,22 @@ export default function Home() {
 
       const data = await response.json();
       console.log('✅ Réponse du backend :', data);
-      Alert.alert("Résultat OCR", JSON.stringify(data.result?.items?.slice(0, 3), null, 2));
+
+      if (response.ok) {
+        // Affichage du ticket ID dans la console de home.tsx
+        console.log('Ticket ID envoyé par le backend:', data.ticket_id);
+
+        // Rediriger vers /scan_ticket avec les données du ticket
+        router.push({
+          pathname: '/scan_ticket',
+          params: {
+            result: JSON.stringify(data.result),
+            ticket_id: data.ticket_id,  // Passer l'ID du ticket ici
+          },
+        });
+      } else {
+        Alert.alert("Erreur", data.error || "Échec du scan.");
+      }
     } catch (error) {
       console.error('❌ Erreur lors de l’envoi au backend :', error);
       Alert.alert("Erreur", "Impossible d'envoyer l'image au backend.");
@@ -267,6 +281,12 @@ export default function Home() {
           </View>
         </View>
       </Modal>
+
+      {/* Ajouter la BottomNav */}
+      <BottomNav />  {/* Ajoutez BottomNav ici */}
+
+      {/* Espacement entre le dernier composant et la BottomNav */}
+      <View style={{ marginBottom: 70 }} /> {/* Ajustez cette valeur pour l'espacement */}
     </ScrollView>
   );
 }

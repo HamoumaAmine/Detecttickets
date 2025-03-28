@@ -1,12 +1,22 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+  ScrollView,
+  Alert,
+  Modal
+} from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Définition des interfaces pour le typage
 interface TicketItem {
+  id?: number;
   name: string;
-  collection?: string;
-  material?: string;
   quantity: string;
   price: string;
 }
@@ -19,35 +29,92 @@ interface TicketData {
   time: string;
   items: TicketItem[];
   total: string;
-  category: string;
   paymentMethod: string;
 }
 
-interface TicketScreenProps {
-  ticketData: TicketData;
-  onAddTicket?: () => void;
-}
+export default function Page() {
+  const { result, ticket_id } = useLocalSearchParams();
+  const router = useRouter();
+  const data = result ? JSON.parse(result as string) : {};
 
-const TicketScreen: React.FC<TicketScreenProps> = ({ ticketData, onAddTicket }) => {
-  // Destructuration des données du ticket pour faciliter l'accès
-  const {
-    ticketNumber,
-    customerName,
-    customerInfo,
-    date,
-    time,
-    items,
-    total,
-    category,
-    paymentMethod
-  } = ticketData;
+  const [editable, setEditable] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [showErrorPopup, setShowErrorPopup] = useState(false); // Nouveau état pour gérer l'affichage de l'erreur
+  const [ticketData, setTicketData] = useState<TicketData>({
+    ticketNumber: data.ticket_number || 'Inconnu',
+    customerName: data.store_name || 'Inconnu',
+    customerInfo: data.store_address || 'Inconnu',
+    date: data.date_time?.split(' ')[0] || '',
+    time: data.date_time?.split(' ')[1] || '',
+    items: data.items?.map((item: any) => ({
+      id: item.id,
+      name: item.description,
+      quantity: item.quantity.toString(),
+      price: `${item.total.toFixed(2)}€`
+    })) || [],
+    total: `${(data.total_amount || 0).toFixed(2)}€`,
+    paymentMethod: data.payment_method || 'Inconnu'
+  });
+
+  const handleUpdateTicket = async () => {
+    console.log('Enregistrement en cours...');
+
+    const token = await AsyncStorage.getItem('token');
+    if (!ticket_id) {
+      console.log('Aucun ticket_id trouvé.');
+      return;
+    }
+
+    const itemsWithMissingId = ticketData.items.filter(item => !item.id);
+    if (itemsWithMissingId.length > 0) {
+      console.log("Certains articles n'ont pas d'identifiant.");
+      Alert.alert(
+        'Erreur',
+        "Un ou plusieurs articles n'ont pas d'identifiant. La mise à jour ne peut pas être effectuée."
+      );
+      return;
+    }
+
+    const payload = {
+      total: ticketData.total,
+      moyen_paiement: ticketData.paymentMethod,
+      items: ticketData.items.map((item) => ({
+        id: item.id,
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price
+      }))
+    };
+
+    try {
+      // Envoi de la requête API pour mettre à jour le ticket
+      const response = await axios.put(`http://localhost:8000/ticket/${ticket_id}/update`, payload, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.data.error) {
+        // Si le backend retourne une erreur (ticket déjà scanné)
+        setShowErrorPopup(true); // Affiche le popup d'erreur
+        return;
+      }
+
+      console.log('Réponse de l\'API :', response);
+      setShowPopup(true); // Affiche le popup de succès
+    } catch (error: any) {
+      console.error('Erreur lors de la mise à jour :', error);
+      Alert.alert('❌ Erreur', "Erreur inconnue lors de l'appel API.");
+    }
+  };
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Ticket</Text>
         <View style={styles.actions}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => setEditable(!editable)}>
             <Feather name="edit-2" size={24} color="#781244" />
           </TouchableOpacity>
           <TouchableOpacity>
@@ -57,30 +124,36 @@ const TicketScreen: React.FC<TicketScreenProps> = ({ ticketData, onAddTicket }) 
       </View>
 
       <View style={styles.ticketContent}>
-        <Text style={styles.ticketNumber}>Ticket {ticketNumber}</Text>
-        
+        <Text style={styles.ticketNumber}>Ticket {ticketData.ticketNumber}</Text>
+
         <View style={styles.customerInfo}>
           <View>
-            <Text style={styles.customer}>{customerName}</Text>
-            <Text style={styles.customerSubtitle}>{customerInfo}</Text>
+            <Text style={styles.customer}>{ticketData.customerName}</Text>
+            <Text style={styles.customerSubtitle}>{ticketData.customerInfo}</Text>
           </View>
           <View>
-            <Text style={styles.date}>{date}</Text>
-            <Text style={styles.date}>{time}</Text>
+            <Text style={styles.date}>{ticketData.date}</Text>
+            <Text style={styles.date}>{ticketData.time}</Text>
           </View>
         </View>
 
         <Text style={styles.articlesTitle}>Mes articles</Text>
-        
-        {items.map((item, index) => (
+
+        {ticketData.items.map((item, index) => (
           <View key={index} style={styles.article}>
             <View style={styles.articleInfo}>
-              <Text style={styles.articleName}>{item.name}</Text>
-              {item.collection && (
-                <Text style={styles.articleDescription}>{item.collection}</Text>
-              )}
-              {item.material && (
-                <Text style={styles.articleDescription}>{item.material}</Text>
+              {editable ? (
+                <TextInput
+                  style={styles.articleName}
+                  value={item.name}
+                  onChangeText={(text) => {
+                    const updatedItems = [...ticketData.items];
+                    updatedItems[index].name = text;
+                    setTicketData({ ...ticketData, items: updatedItems });
+                  }}
+                />
+              ) : (
+                <Text style={styles.articleName}>{item.name}</Text>
               )}
             </View>
             <Text style={styles.articleQuantity}>{item.quantity}</Text>
@@ -92,59 +165,79 @@ const TicketScreen: React.FC<TicketScreenProps> = ({ ticketData, onAddTicket }) 
 
         <View style={styles.totalSection}>
           <Text style={styles.totalText}>Total</Text>
-          <Text style={styles.totalAmount}>{total}</Text>
+          <Text style={styles.totalAmount}>{ticketData.total}</Text>
         </View>
 
         <View style={styles.additionalInfo}>
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Catégorie</Text>
-            <Text style={styles.infoValue}>{category}</Text>
-          </View>
-          <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Moyen de paiement</Text>
-            <Text style={styles.infoValue}>{paymentMethod}</Text>
+            {editable ? (
+              <TextInput
+                style={styles.infoValue}
+                value={ticketData.paymentMethod}
+                onChangeText={(text) => setTicketData({ ...ticketData, paymentMethod: text })}
+              />
+            ) : (
+              <Text style={styles.infoValue}>{ticketData.paymentMethod}</Text>
+            )}
           </View>
         </View>
       </View>
 
-      <TouchableOpacity style={styles.addButton} onPress={onAddTicket}>
-        <Text style={styles.addButtonText}>Ajouter le ticket</Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
+      {editable && (
+        <TouchableOpacity style={styles.addButton} onPress={handleUpdateTicket}>
+          <Text style={styles.addButtonText}>Enregistrer</Text>
+        </TouchableOpacity>
+      )}
 
-// Exemple de données qui seraient chargées depuis la base de données
-const sampleTicketData: TicketData = {
-  ticketNumber: 'N°4-00001091',
-  customerName: 'Inconnu',
-  customerInfo: 'Inconnu',
-  date: '04 janv. 2025',
-  time: '13:20:11',
-  items: [
-    {
-      name: 'Vase Beige',
-      collection: 'Collection 03',
-      material: 'Céramique',
-      quantity: '1',
-      price: '28,90€'
-    },
-    {
-      name: 'Vase Beige',
-      quantity: '1',
-      price: '33,00€'
-    }
-  ],
-  total: '61,90€',
-  category: 'Shopping',
-  paymentMethod: 'CB'
-};
+      {/* Popup d'erreur */}
+      <Modal
+        visible={showErrorPopup}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowErrorPopup(false)}
+      >
+        <View style={styles.popupOverlay}>
+          <View style={styles.popupContainer}>
+            <Text style={styles.popupTitle}>Ticket déjà scanné</Text>
+            <TouchableOpacity
+              style={styles.popupButton}
+              onPress={() => setShowErrorPopup(false)}
+            >
+              <Text style={styles.popupButtonText}>Fermer</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Popup de confirmation */}
+      <Modal
+        visible={showPopup}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowPopup(false)}
+      >
+        <View style={styles.popupOverlay}>
+          <View style={styles.popupContainer}>
+            <Text style={styles.popupTitle}>Mise à jour réussie</Text>
+            <TouchableOpacity
+              style={styles.popupButton}
+              onPress={() => router.push('/home')}
+            >
+              <Text style={styles.popupButtonText}>Retour à l’accueil</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </ScrollView>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
+    flexGrow: 1,
     padding: 16,
+    backgroundColor: '#f5f5f5'
   },
   header: {
     flexDirection: 'row',
@@ -204,10 +297,6 @@ const styles = StyleSheet.create({
   articleName: {
     fontSize: 14,
   },
-  articleDescription: {
-    color: '#6b7280',
-    fontSize: 14,
-  },
   articleQuantity: {
     marginHorizontal: 12,
     fontSize: 14,
@@ -246,6 +335,8 @@ const styles = StyleSheet.create({
   },
   infoValue: {
     fontSize: 14,
+    flex: 1,
+    textAlign: 'right'
   },
   addButton: {
     backgroundColor: '#781244',
@@ -258,8 +349,34 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
+  popupOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  popupContainer: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    width: '80%',
+  },
+  popupTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  popupButton: {
+    backgroundColor: '#781244',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    width: '100%',
+  },
+  popupButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
 });
-
-// Utilisation du composant avec les données d'exemple
-// Dans une application réelle, vous injecteriez les données de votre base
-export default () => <TicketScreen ticketData={sampleTicketData} />;
